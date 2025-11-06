@@ -23,9 +23,12 @@ import {
   DeleteOutlined,
   UploadOutlined,
   EnvironmentOutlined,
+  BgColorsOutlined,
 } from "@ant-design/icons";
 import brandService from "../../services/brandService";
 import vehicleService from "../../services/vehicleService";
+import colorService from "../../services/colorService";
+import BrandColorsDrawer from "../../components/brands/BrandColorsDrawer";
 import type {
   Brand,
   BrandRequest,
@@ -38,6 +41,7 @@ const { Title, Text } = Typography;
 
 interface BrandWithCount extends Brand {
   vehicleCount?: number;
+  colorCount?: number;
 }
 
 const BrandsPage = () => {
@@ -65,6 +69,10 @@ const BrandsPage = () => {
     null
   );
 
+  // Color management state
+  const [isColorsModalOpen, setIsColorsModalOpen] = useState(false);
+  const [colorsBrand, setColorsBrand] = useState<Brand | null>(null);
+
   useEffect(() => {
     fetchBrands();
   }, []);
@@ -77,19 +85,31 @@ const BrandsPage = () => {
         pageNumber: 1,
       });
 
-      // Cargar conteo de vehículos para cada marca
+      // Cargar conteo de vehículos y colores para cada marca
       const brandsWithCount = await Promise.all(
         response.data.map(async (brand) => {
           try {
+            // Obtener conteo de vehículos
             const vehicles: any = await vehicleService.getBaseVehiclesByBrand(
               brand.id
             );
-            const count = Array.isArray(vehicles)
+            const vehicleCount = Array.isArray(vehicles)
               ? vehicles.length
               : vehicles?.data?.length || 0;
-            return { ...brand, vehicleCount: count };
+
+            // Obtener conteo de colores
+            const colors: any = await colorService.getColors({ brandId: brand.id });
+            let colorCount = 0;
+
+            if (colors && typeof colors === 'object' && 'data' in colors) {
+              colorCount = Array.isArray(colors.data) ? colors.data.length : 0;
+            } else if (Array.isArray(colors)) {
+              colorCount = colors.length;
+            }
+
+            return { ...brand, vehicleCount, colorCount };
           } catch {
-            return { ...brand, vehicleCount: 0 };
+            return { ...brand, vehicleCount: 0, colorCount: 0 };
           }
         })
       );
@@ -315,6 +335,16 @@ const BrandsPage = () => {
     }
   };
 
+  const handleOpenColorsModal = (brand: Brand) => {
+    setColorsBrand(brand);
+    setIsColorsModalOpen(true);
+  };
+
+  const handleCloseColorsModal = () => {
+    setIsColorsModalOpen(false);
+    setColorsBrand(null);
+  };
+
   return (
     <div>
       <Space
@@ -491,6 +521,18 @@ const BrandsPage = () => {
                           {brand.vehicleCount === 1 ? "vehículo" : "vehículos"}
                         </Text>
                       )}
+                      {brand.colorCount !== undefined && (
+                        <Text
+                          style={{
+                            fontSize: "13px",
+                            color: "#1890ff",
+                            fontWeight: 500,
+                          }}
+                        >
+                          <BgColorsOutlined /> {brand.colorCount}{" "}
+                          {brand.colorCount === 1 ? "color" : "colores"}
+                        </Text>
+                      )}
                     </Space>
 
                     <Space
@@ -505,6 +547,14 @@ const BrandsPage = () => {
                         style={{ borderRadius: "6px" }}
                       >
                         Gestionar Direcciones
+                      </Button>
+                      <Button
+                        block
+                        icon={<BgColorsOutlined />}
+                        onClick={() => handleOpenColorsModal(brand)}
+                        style={{ borderRadius: "6px" }}
+                      >
+                        Gestionar Colores
                       </Button>
                     </Space>
                   </div>
@@ -813,6 +863,13 @@ const BrandsPage = () => {
           </Form.Item>
         </Form>
       </Drawer>
+
+      {/* Drawer de Colores */}
+      <BrandColorsDrawer
+        open={isColorsModalOpen}
+        brand={colorsBrand}
+        onClose={handleCloseColorsModal}
+      />
     </div>
   );
 };

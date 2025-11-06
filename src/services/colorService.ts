@@ -25,15 +25,25 @@ export const colorService = {
     return response.data;
   },
 
-  // Associate color to vehicle
+  // Associate color to vehicle version
   associateColorToVehicle: async (
-    colorId: number,
-    vehicleVersionId: number
+    versionId: number,
+    colorId: number
   ): Promise<void> => {
     await api.post("/VehicleColor/AssociateColorToVehicle", {
+      versionId,
       colorId,
-      vehicleVersionId,
     });
+  },
+
+  // Remove color association from vehicle version
+  removeColorFromVehicle: async (
+    versionId: number,
+    colorId: number
+  ): Promise<void> => {
+    await api.delete(
+      `/VehicleColor/RemoveColorFromVehicle?versionId=${versionId}&colorId=${colorId}`
+    );
   },
 
   // Update color
@@ -42,8 +52,15 @@ export const colorService = {
     color: Partial<VehicleColorRequest>
   ): Promise<VehicleColor> => {
     const response = await api.put<VehicleColor>("/VehicleColor/UpdateColor", {
-      id,
-      ...color,
+      colorId: id,
+      colorCode: color.colorCode,
+      colorName: color.colorName,
+      minYear: color.minYear,
+      maxYear: color.maxYear,
+      manufacturer: color.manufacturer,
+      mainColorGroup: color.mainColorGroup,
+      mainColorGroupHexCode: color.mainColorGroupHexCode,
+      colorType: color.colorType,
     });
     return response.data;
   },

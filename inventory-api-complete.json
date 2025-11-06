@@ -1,0 +1,388 @@
+{
+  "apiInfo": {
+    "title": "Inventory Management API",
+    "baseUrl": "https://movilidadelectrico.azurewebsites.net",
+    "version": "v1",
+    "extractionDate": "2025-10-29",
+    "requiresAuth": true
+  },
+  "endpoints": [
+    {
+      "id": "getInventoryItems",
+      "method": "GET",
+      "path": "/api/Inventory/GetInventoryItems",
+      "summary": "Retrieve inventory items with filtering and pagination",
+      "auth": true,
+      "parameters": [
+        {"name": "VIN", "type": "string", "in": "query", "required": false},
+        {"name": "SerialNumber", "type": "string", "in": "query", "required": false},
+        {"name": "VehicleVersionId", "type": "integer", "in": "query", "required": false},
+        {"name": "VehicleColorId", "type": "integer", "in": "query", "required": false},
+        {"name": "Location", "type": "string", "in": "query", "required": false},
+        {"name": "Status", "type": "InventoryStatus", "in": "query", "required": false},
+        {"name": "MinMileage", "type": "integer", "in": "query", "required": false},
+        {"name": "MaxMileage", "type": "integer", "in": "query", "required": false},
+        {"name": "ModelYear", "type": "integer", "in": "query", "required": false},
+        {"name": "EntryDateFrom", "type": "string", "format": "date-time", "in": "query", "required": false},
+        {"name": "EntryDateTo", "type": "string", "format": "date-time", "in": "query", "required": false},
+        {"name": "SupplierName", "type": "string", "in": "query", "required": false},
+        {"name": "HasExited", "type": "boolean", "in": "query", "required": false},
+        {"name": "PageSize", "type": "integer", "in": "query", "required": false},
+        {"name": "PageNumber", "type": "integer", "in": "query", "required": false}
+      ],
+      "responses": {
+        "200": {"description": "OK", "schema": "PaginatedResponse<InventoryItemDto>"}
+      }
+    },
+    {
+      "id": "getById",
+      "method": "GET",
+      "path": "/api/Inventory/GetById",
+      "summary": "Get a specific inventory item by ID",
+      "auth": true,
+      "parameters": [
+        {"name": "id", "type": "integer", "in": "query", "required": true}
+      ],
+      "responses": {
+        "200": {"description": "OK", "schema": "InventoryItemDto"}
+      }
+    },
+    {
+      "id": "getByVIN",
+      "method": "GET",
+      "path": "/api/Inventory/GetByVIN",
+      "summary": "Get a specific inventory item by VIN",
+      "auth": true,
+      "parameters": [
+        {"name": "vin", "type": "string", "in": "query", "required": true}
+      ],
+      "responses": {
+        "200": {"description": "OK", "schema": "InventoryItemDto"}
+      }
+    },
+    {
+      "id": "createInventoryItem",
+      "method": "POST",
+      "path": "/api/Inventory/CreateInventoryItem",
+      "summary": "Create a new inventory item",
+      "auth": true,
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": "InventoryItemRequest"
+      },
+      "responses": {
+        "200": {"description": "OK", "schema": "InventoryItemDto"}
+      }
+    },
+    {
+      "id": "updateInventoryItem",
+      "method": "PUT",
+      "path": "/api/Inventory/UpdateInventoryItem",
+      "summary": "Update an existing inventory item",
+      "auth": true,
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": "InventoryItemUpdateRequest"
+      },
+      "responses": {
+        "200": {"description": "OK", "schema": "InventoryItemDto"}
+      }
+    },
+    {
+      "id": "deleteInventoryItem",
+      "method": "DELETE",
+      "path": "/api/Inventory/DeleteInventoryItem",
+      "summary": "Delete an inventory item",
+      "auth": true,
+      "parameters": [
+        {"name": "id", "type": "integer", "in": "query", "required": true}
+      ],
+      "responses": {
+        "200": {"description": "OK"}
+      }
+    },
+    {
+      "id": "addImages",
+      "method": "POST",
+      "path": "/api/Inventory/AddImages",
+      "summary": "Add images to an inventory item",
+      "auth": true,
+      "parameters": [
+        {"name": "inventoryItemId", "type": "integer", "in": "query", "required": true}
+      ],
+      "requestBody": {
+        "contentType": "multipart/form-data",
+        "schema": {
+          "images": {"type": "array", "items": {"type": "binary"}},
+          "imageType": {"type": "string"}
+        }
+      },
+      "responses": {
+        "200": {"description": "OK", "schema": "Array<InventoryItemImageDto>"}
+      }
+    },
+    {
+      "id": "deleteImage",
+      "method": "DELETE",
+      "path": "/api/Inventory/DeleteImage",
+      "summary": "Delete an image from inventory",
+      "auth": true,
+      "parameters": [
+        {"name": "imageId", "type": "integer", "in": "query", "required": true}
+      ],
+      "responses": {
+        "200": {"description": "OK"}
+      }
+    },
+    {
+      "id": "getMovements",
+      "method": "GET",
+      "path": "/api/Inventory/GetMovements",
+      "summary": "Get inventory movements with filtering and pagination",
+      "auth": true,
+      "parameters": [
+        {"name": "InventoryItemId", "type": "integer", "in": "query", "required": false},
+        {"name": "MovementType", "type": "MovementType", "in": "query", "required": false},
+        {"name": "MovementDateFrom", "type": "string", "format": "date-time", "in": "query", "required": false},
+        {"name": "MovementDateTo", "type": "string", "format": "date-time", "in": "query", "required": false},
+        {"name": "Location", "type": "string", "in": "query", "required": false},
+        {"name": "PerformedBy", "type": "string", "in": "query", "required": false},
+        {"name": "PageSize", "type": "integer", "in": "query", "required": false},
+        {"name": "PageNumber", "type": "integer", "in": "query", "required": false}
+      ],
+      "responses": {
+        "200": {"description": "OK", "schema": "PaginatedResponse<InventoryMovementDto>"}
+      }
+    },
+    {
+      "id": "getMovementsByItem",
+      "method": "GET",
+      "path": "/api/Inventory/GetMovementsByItem",
+      "summary": "Get all movements for a specific inventory item",
+      "auth": true,
+      "parameters": [
+        {"name": "inventoryItemId", "type": "integer", "in": "query", "required": true}
+      ],
+      "responses": {
+        "200": {"description": "OK", "schema": "Array<InventoryMovementDto>"}
+      }
+    },
+    {
+      "id": "createMovement",
+      "method": "POST",
+      "path": "/api/Inventory/CreateMovement",
+      "summary": "Create a new inventory movement record",
+      "auth": true,
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": "InventoryMovementRequest"
+      },
+      "responses": {
+        "200": {"description": "OK", "schema": "InventoryMovementDto"}
+      }
+    },
+    {
+      "id": "changeLocation",
+      "method": "POST",
+      "path": "/api/Inventory/ChangeLocation",
+      "summary": "Change the location of an inventory item",
+      "auth": true,
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": "ChangeLocationRequest"
+      },
+      "responses": {
+        "200": {"description": "OK"}
+      }
+    },
+    {
+      "id": "changeStatus",
+      "method": "POST",
+      "path": "/api/Inventory/ChangeStatus",
+      "summary": "Change the status of an inventory item",
+      "auth": true,
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": "ChangeStatusRequest"
+      },
+      "responses": {
+        "200": {"description": "OK"}
+      }
+    },
+    {
+      "id": "updateMileage",
+      "method": "POST",
+      "path": "/api/Inventory/UpdateMileage",
+      "summary": "Update the mileage of an inventory item",
+      "auth": true,
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": "UpdateMileageRequest"
+      },
+      "responses": {
+        "200": {"description": "OK"}
+      }
+    }
+  ],
+  "schemas": {
+    "InventoryItemRequest": {
+      "type": "object",
+      "required": ["vehicleVersionId", "vehicleColorId", "status", "modelYear"],
+      "properties": {
+        "vin": {"type": "string", "nullable": true},
+        "serialNumber": {"type": "string", "nullable": true},
+        "vehicleVersionId": {"type": "integer", "format": "int32"},
+        "vehicleColorId": {"type": "integer", "format": "int32"},
+        "location": {"type": "string", "nullable": true},
+        "status": {"$ref": "InventoryStatus"},
+        "mileage": {"type": "integer", "format": "int32", "nullable": true},
+        "modelYear": {"type": "integer", "format": "int32"},
+        "entryDate": {"type": "string", "format": "date-time", "nullable": true},
+        "entryNotes": {"type": "string", "nullable": true},
+        "purchasePrice": {"type": "number", "format": "double", "nullable": true},
+        "purchaseCurrency": {"$ref": "Currency", "nullable": true},
+        "supplierName": {"type": "string", "nullable": true},
+        "exitDate": {"type": "string", "format": "date-time", "nullable": true},
+        "exitNotes": {"type": "string", "nullable": true}
+      }
+    },
+    "InventoryItemUpdateRequest": {
+      "type": "object",
+      "required": ["inventoryItemId"],
+      "properties": {
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "vin": {"type": "string", "nullable": true},
+        "serialNumber": {"type": "string", "nullable": true},
+        "vehicleVersionId": {"type": "integer", "format": "int32", "nullable": true},
+        "vehicleColorId": {"type": "integer", "format": "int32", "nullable": true},
+        "location": {"type": "string", "nullable": true},
+        "status": {"$ref": "InventoryStatus", "nullable": true},
+        "mileage": {"type": "integer", "format": "int32", "nullable": true},
+        "modelYear": {"type": "integer", "format": "int32", "nullable": true},
+        "entryDate": {"type": "string", "format": "date-time", "nullable": true},
+        "entryNotes": {"type": "string", "nullable": true},
+        "purchasePrice": {"type": "number", "format": "double", "nullable": true},
+        "purchaseCurrency": {"$ref": "Currency", "nullable": true},
+        "supplierName": {"type": "string", "nullable": true},
+        "exitDate": {"type": "string", "format": "date-time", "nullable": true},
+        "exitNotes": {"type": "string", "nullable": true}
+      }
+    },
+    "InventoryMovementRequest": {
+      "type": "object",
+      "required": ["inventoryItemId", "movementType"],
+      "properties": {
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "movementType": {"$ref": "MovementType"},
+        "movementDate": {"type": "string", "format": "date-time", "nullable": true},
+        "fromLocation": {"type": "string", "nullable": true},
+        "toLocation": {"type": "string", "nullable": true},
+        "reason": {"type": "string", "nullable": true},
+        "notes": {"type": "string", "nullable": true},
+        "documentReference": {"type": "string", "nullable": true},
+        "performedBy": {"type": "string", "nullable": true},
+        "previousMileage": {"type": "integer", "format": "int32", "nullable": true},
+        "newMileage": {"type": "integer", "format": "int32", "nullable": true}
+      }
+    },
+    "ChangeLocationRequest": {
+      "type": "object",
+      "required": ["inventoryItemId"],
+      "properties": {
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "newLocation": {"type": "string", "nullable": true},
+        "reason": {"type": "string", "nullable": true},
+        "performedBy": {"type": "string", "nullable": true}
+      }
+    },
+    "ChangeStatusRequest": {
+      "type": "object",
+      "required": ["inventoryItemId"],
+      "properties": {
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "newStatus": {"type": "string", "nullable": true},
+        "reason": {"type": "string", "nullable": true},
+        "performedBy": {"type": "string", "nullable": true}
+      }
+    },
+    "UpdateMileageRequest": {
+      "type": "object",
+      "required": ["inventoryItemId", "newMileage"],
+      "properties": {
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "newMileage": {"type": "integer", "format": "int32"},
+        "notes": {"type": "string", "nullable": true},
+        "performedBy": {"type": "string", "nullable": true}
+      }
+    },
+    "InventoryItemDto": {
+      "type": "object",
+      "note": "Inferred schema - not explicitly defined in OpenAPI spec",
+      "properties": {
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "vin": {"type": "string", "nullable": true},
+        "serialNumber": {"type": "string", "nullable": true},
+        "vehicleVersionId": {"type": "integer", "format": "int32"},
+        "vehicleColorId": {"type": "integer", "format": "int32"},
+        "location": {"type": "string", "nullable": true},
+        "status": {"$ref": "InventoryStatus"},
+        "mileage": {"type": "integer", "format": "int32", "nullable": true},
+        "modelYear": {"type": "integer", "format": "int32"},
+        "entryDate": {"type": "string", "format": "date-time", "nullable": true},
+        "entryNotes": {"type": "string", "nullable": true},
+        "purchasePrice": {"type": "number", "format": "double", "nullable": true},
+        "purchaseCurrency": {"$ref": "Currency", "nullable": true},
+        "supplierName": {"type": "string", "nullable": true},
+        "exitDate": {"type": "string", "format": "date-time", "nullable": true},
+        "exitNotes": {"type": "string", "nullable": true},
+        "createdAt": {"type": "string", "format": "date-time", "nullable": true},
+        "updatedAt": {"type": "string", "format": "date-time", "nullable": true}
+      }
+    },
+    "InventoryMovementDto": {
+      "type": "object",
+      "note": "Inferred schema - not explicitly defined in OpenAPI spec",
+      "properties": {
+        "movementId": {"type": "integer", "format": "int32"},
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "movementType": {"$ref": "MovementType"},
+        "movementDate": {"type": "string", "format": "date-time"},
+        "fromLocation": {"type": "string", "nullable": true},
+        "toLocation": {"type": "string", "nullable": true},
+        "reason": {"type": "string", "nullable": true},
+        "notes": {"type": "string", "nullable": true},
+        "documentReference": {"type": "string", "nullable": true},
+        "performedBy": {"type": "string", "nullable": true},
+        "previousMileage": {"type": "integer", "format": "int32", "nullable": true},
+        "newMileage": {"type": "integer", "format": "int32", "nullable": true},
+        "createdAt": {"type": "string", "format": "date-time", "nullable": true}
+      }
+    },
+    "InventoryItemImageDto": {
+      "type": "object",
+      "note": "Inferred schema - not explicitly defined in OpenAPI spec",
+      "properties": {
+        "imageId": {"type": "integer", "format": "int32"},
+        "inventoryItemId": {"type": "integer", "format": "int32"},
+        "imageUrl": {"type": "string"},
+        "imageType": {"type": "string", "nullable": true},
+        "uploadedAt": {"type": "string", "format": "date-time", "nullable": true},
+        "uploadedBy": {"type": "string", "nullable": true}
+      }
+    }
+  },
+  "enums": {
+    "InventoryStatus": {
+      "type": "string",
+      "values": ["Available", "Reserved", "InTransit", "InMaintenance", "Sold", "Damaged", "OnHold", "Delivered"]
+    },
+    "MovementType": {
+      "type": "string",
+      "values": ["Entry", "Exit", "Transfer", "StatusChange", "MaintenanceIn", "MaintenanceOut", "Adjustment"]
+    },
+    "Currency": {
+      "type": "string",
+      "values": ["MXN", "USD", "CNY", "JPY", "EUR", "CAD", "RUB"]
+    }
+  }
+}

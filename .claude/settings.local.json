@@ -4,7 +4,13 @@
       "Bash(npm run dev:*)",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Read(//c/Users/Maquina 1/Downloads/**)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(cat:*)",
+      "Bash(awk:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

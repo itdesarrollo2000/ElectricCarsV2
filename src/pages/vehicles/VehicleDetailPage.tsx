@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Spin, message, Typography, Button, Descriptions, Divider, Tag, Image, Empty, Avatar, Drawer, Form, Input, InputNumber, Select, Upload, Tabs, Switch, Space, Table, Modal, Alert, List } from 'antd';
-import { ArrowLeftOutlined, DownloadOutlined, ThunderboltFilled, HeartFilled, HeartOutlined, PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, MinusCircleOutlined, CommentOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DownloadOutlined, ThunderboltFilled, HeartFilled, HeartOutlined, PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, MinusCircleOutlined, CommentOutlined, BgColorsOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd';
 import type { AdditionalEquipmentRequest, VehicleComment, VehicleCommentRequest, VehicleImage } from '../../types';
 import * as XLSX from 'xlsx';
@@ -11,7 +11,8 @@ import vehicleService from '../../services/vehicleService';
 import brandService from '../../services/brandService';
 import equipmentService from '../../services/equipmentService';
 import commentService from '../../services/commentService';
-import type { VehicleVersion, BaseVehicle, Brand } from '../../types';
+import colorService from '../../services/colorService';
+import type { VehicleVersion, BaseVehicle, Brand, VehicleColor } from '../../types';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -50,6 +51,12 @@ const VehicleDetailPage = () => {
   // Estado para confirmación de eliminación de equipo
   const [deletingEquipmentIndex, setDeletingEquipmentIndex] = useState<number | null>(null);
 
+  // Estados para gestión de colores
+  const [isColorsModalOpen, setIsColorsModalOpen] = useState(false);
+  const [selectedVersion, setSelectedVersion] = useState<VehicleVersion | null>(null);
+  const [availableColors, setAvailableColors] = useState<VehicleColor[]>([]);
+  const [loadingColors, setLoadingColors] = useState(false);
+
   useEffect(() => {
     if (id) {
       fetchVehicleDetails(parseInt(id));
@@ -83,6 +90,9 @@ const VehicleDetailPage = () => {
         pageSize: 100,
         pageNumber: 1,
       });
+
+      console.log('Versions Response:', versionsResponse);
+      console.log('Versions Data:', versionsResponse.data);
 
       const versionsData = versionsResponse.data || [];
       setVersions(versionsData);
@@ -866,6 +876,68 @@ const VehicleDetailPage = () => {
     }
   };
 
+  // Funciones para gestión de colores
+  const handleOpenColorsModal = async (version: VehicleVersion) => {
+    setSelectedVersion(version);
+    setIsColorsModalOpen(true);
+
+    if (baseVehicle?.brandId) {
+      try {
+        setLoadingColors(true);
+        const colors: any = await colorService.getColors({ brandId: baseVehicle.brandId });
+
+        let colorsData: VehicleColor[] = [];
+        if (colors && typeof colors === 'object' && 'data' in colors) {
+          colorsData = Array.isArray(colors.data) ? colors.data : [];
+        } else if (Array.isArray(colors)) {
+          colorsData = colors;
+        }
+
+        setAvailableColors(colorsData);
+      } catch (error) {
+        console.error('Error loading colors:', error);
+        message.error('Error al cargar los colores');
+        setAvailableColors([]);
+      } finally {
+        setLoadingColors(false);
+      }
+    }
+  };
+
+  const handleAssociateColor = async (colorId: number) => {
+    if (!selectedVersion) return;
+
+    try {
+      await colorService.associateColorToVehicle(selectedVersion.id, colorId);
+      message.success('Color asociado exitosamente');
+
+      // Recargar los detalles del vehículo para actualizar los colores
+      if (id) {
+        fetchVehicleDetails(parseInt(id));
+      }
+    } catch (error: any) {
+      console.error('Error associating color:', error);
+      message.error(error.response?.data?.message || 'Error al asociar el color');
+    }
+  };
+
+  const handleRemoveColor = async (colorId: number) => {
+    if (!selectedVersion) return;
+
+    try {
+      await colorService.removeColorFromVehicle(selectedVersion.id, colorId);
+      message.success('Color eliminado exitosamente');
+
+      // Recargar los detalles del vehículo para actualizar los colores
+      if (id) {
+        fetchVehicleDetails(parseInt(id));
+      }
+    } catch (error: any) {
+      console.error('Error removing color:', error);
+      message.error(error.response?.data?.message || 'Error al eliminar el color');
+    }
+  };
+
   const generateVersionPDF = async (version: VehicleVersion) => {
     if (!baseVehicle) return;
 
@@ -1330,7 +1402,9 @@ const VehicleDetailPage = () => {
           </Card>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {versions.map((version) => (
+            {versions.map((version) => {
+              console.log('Rendering version:', version);
+              return (
               <Card
                 key={version.id}
                 variant="borderless"
@@ -1439,6 +1513,12 @@ const VehicleDetailPage = () => {
                       </div>
                       <Space wrap>
                         <Button
+                          icon={<BgColorsOutlined />}
+                          onClick={() => handleOpenColorsModal(version)}
+                        >
+                          Colores
+                        </Button>
+                        <Button
                           icon={<EditOutlined />}
                           onClick={() => handleOpenVersionForm(version)}
                         >
@@ -1497,40 +1577,40 @@ const VehicleDetailPage = () => {
 
                     <Descriptions column={2} size="small" bordered>
                       <Descriptions.Item label="Autonomía Máxima" span={1}>
-                        {version.range ? `${version.range} km` : 'N/A'}
+                        {(version as any).maxDrivingRangeKm != null ? `${(version as any).maxDrivingRangeKm} km` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Potencia del Motor" span={1}>
-                        {version.motorPower ? `${version.motorPower} kW` : 'N/A'}
+                        {(version as any).motorPowerkw != null ? `${(version as any).motorPowerkw} kW` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Capacidad de Batería" span={1}>
-                        {version.batteryCapacity ? `${version.batteryCapacity} kWh` : 'N/A'}
+                        {(version as any).batteryCapacityKwh != null ? `${(version as any).batteryCapacityKwh} kWh` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Velocidad Máxima" span={1}>
-                        {(version as any).maximumSpeedKmH ? `${(version as any).maximumSpeedKmH} km/h` : 'N/A'}
+                        {(version as any).maximumSpeedKmH != null ? `${(version as any).maximumSpeedKmH} km/h` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Torque del Motor" span={1}>
-                        {version.torque ? `${version.torque} Nm` : 'N/A'}
+                        {(version as any).motorTorqueNm != null ? `${(version as any).motorTorqueNm} Nm` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Tiempo de Carga" span={1}>
-                        {version.chargingTime ? `${version.chargingTime} hrs` : 'N/A'}
+                        {(version as any).chargeTimeHrs != null ? `${(version as any).chargeTimeHrs} hrs` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Número de Asientos" span={1}>
-                        {version.seatingCapacity ? `${version.seatingCapacity}` : 'N/A'}
+                        {(version as any).seatsNumber != null ? `${(version as any).seatsNumber}` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Número de Puertas" span={1}>
-                        {(version as any).doorsNumber ? `${(version as any).doorsNumber}` : 'N/A'}
+                        {(version as any).doorsNumber != null ? `${(version as any).doorsNumber}` : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Tamaño de Llanta" span={1}>
-                        {(version as any).wheelSize || 'N/A'}
+                        {(version as any).wheelSize ?? 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Airbag" span={1}>
-                        {(version as any).airbag ? 'Sí' : 'No'}
+                        {(version as any).airbag === true ? 'Sí' : (version as any).airbag === false ? 'No' : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Cámara Trasera" span={1}>
-                        {(version as any).rearViewCamera ? 'Sí' : 'N/A'}
+                        {(version as any).rearViewCamera === true ? 'Sí' : (version as any).rearViewCamera === false ? 'No' : 'N/A'}
                       </Descriptions.Item>
                       <Descriptions.Item label="Sensor de Estacionamiento" span={1}>
-                        {(version as any).parkingRadar ? 'Sí' : 'N/A'}
+                        {(version as any).parkingRadar === true ? 'Sí' : (version as any).parkingRadar === false ? 'No' : 'N/A'}
                       </Descriptions.Item>
                     </Descriptions>
 
@@ -1616,7 +1696,8 @@ const VehicleDetailPage = () => {
                   </div>
                 </div>
               </Card>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>
@@ -2169,6 +2250,125 @@ const VehicleDetailPage = () => {
             )}
           </Spin>
         </Space>
+      </Modal>
+
+      {/* Modal de gestión de colores */}
+      <Modal
+        title={
+          <Space>
+            <BgColorsOutlined />
+            <span>Colores de {selectedVersion?.versionName}</span>
+          </Space>
+        }
+        open={isColorsModalOpen}
+        onCancel={() => setIsColorsModalOpen(false)}
+        footer={null}
+        width={800}
+      >
+        <Spin spinning={loadingColors}>
+          <Space direction="vertical" style={{ width: '100%' }} size="large">
+            {/* Colores asignados */}
+            <div>
+              <Title level={5}>Colores Asignados</Title>
+              {selectedVersion?.associatedColors && selectedVersion.associatedColors.length > 0 ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                  {selectedVersion.associatedColors.map((color) => (
+                    <Card
+                      key={color.id}
+                      size="small"
+                      style={{ width: '200px' }}
+                      actions={[
+                        <Button
+                          key="remove"
+                          danger
+                          size="small"
+                          icon={<DeleteOutlined />}
+                          onClick={() => handleRemoveColor(color.id)}
+                        >
+                          Eliminar
+                        </Button>,
+                      ]}
+                    >
+                      <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '60px',
+                            borderRadius: '6px',
+                            backgroundColor: color.colorCode || color.hexCode,
+                            border: '2px solid #d9d9d9',
+                          }}
+                        />
+                        <Text strong>{color.colorName}</Text>
+                        <Text type="secondary" style={{ fontSize: '12px' }}>
+                          {color.colorCode || color.hexCode}
+                        </Text>
+                      </Space>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Empty description="No hay colores asignados a esta versión" />
+              )}
+            </div>
+
+            <Divider />
+
+            {/* Colores disponibles */}
+            <div>
+              <Title level={5}>Colores Disponibles de la Marca</Title>
+              {availableColors.length > 0 ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                  {availableColors.map((color) => {
+                    const isAssigned = selectedVersion?.associatedColors?.some(
+                      (c) => c.id === color.id
+                    );
+                    return (
+                      <Card
+                        key={color.id}
+                        size="small"
+                        style={{
+                          width: '200px',
+                          opacity: isAssigned ? 0.5 : 1,
+                        }}
+                        actions={[
+                          <Button
+                            key="add"
+                            type="primary"
+                            size="small"
+                            icon={<PlusOutlined />}
+                            onClick={() => handleAssociateColor(color.id)}
+                            disabled={isAssigned}
+                          >
+                            {isAssigned ? 'Asignado' : 'Asignar'}
+                          </Button>,
+                        ]}
+                      >
+                        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '60px',
+                              borderRadius: '6px',
+                              backgroundColor: color.colorCode || color.hexCode,
+                              border: '2px solid #d9d9d9',
+                            }}
+                          />
+                          <Text strong>{color.colorName}</Text>
+                          <Text type="secondary" style={{ fontSize: '12px' }}>
+                            {color.colorCode || color.hexCode}
+                          </Text>
+                        </Space>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <Empty description="No hay colores disponibles para esta marca" />
+              )}
+            </div>
+          </Space>
+        </Spin>
       </Modal>
     </div>
   );

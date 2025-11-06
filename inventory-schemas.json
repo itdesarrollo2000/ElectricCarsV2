@@ -1,0 +1,897 @@
+{
+  "endpoints": {
+    "/api/Inventory/GetInventoryItems": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "VIN",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SerialNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "VehicleVersionId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "VehicleColorId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Location",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/InventoryStatus"
+            }
+          },
+          {
+            "name": "MinMileage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "MaxMileage",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "ModelYear",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "EntryDateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EntryDateTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "SupplierName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HasExited",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/GetById": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/GetByVIN": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "vin",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/CreateInventoryItem": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/UpdateInventoryItem": {
+      "put": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemUpdateRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryItemUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/DeleteInventoryItem": {
+      "delete": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/AddImages": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "inventoryItemId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "imageType": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "images": {
+                  "style": "form"
+                },
+                "imageType": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/DeleteImage": {
+      "delete": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "imageId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/GetMovements": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "InventoryItemId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "MovementType",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/MovementType"
+            }
+          },
+          {
+            "name": "MovementDateFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "MovementDateTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "Location",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PerformedBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/GetMovementsByItem": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "parameters": [
+          {
+            "name": "inventoryItemId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/CreateMovement": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryMovementRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryMovementRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryMovementRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/InventoryMovementRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/ChangeLocation": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeLocationRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeLocationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeLocationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeLocationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/ChangeStatus": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeStatusRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Inventory/UpdateMileage": {
+      "post": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": " (Auth)",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMileageRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMileageRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMileageRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMileageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "schemas": {
+    "InventoryItemRequest": {
+      "type": "object",
+      "properties": {
+        "vin": {
+          "type": "string",
+          "nullable": true
+        },
+        "serialNumber": {
+          "type": "string",
+          "nullable": true
+        },
+        "vehicleVersionId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "vehicleColorId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "location": {
+          "type": "string",
+          "nullable": true
+        },
+        "status": {
+          "$ref": "#/components/schemas/InventoryStatus"
+        },
+        "mileage": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "modelYear": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "entryDate": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "entryNotes": {
+          "type": "string",
+          "nullable": true
+        },
+        "purchasePrice": {
+          "type": "number",
+          "format": "double",
+          "nullable": true
+        },
+        "purchaseCurrency": {
+          "$ref": "#/components/schemas/Currency"
+        },
+        "supplierName": {
+          "type": "string",
+          "nullable": true
+        },
+        "exitDate": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "exitNotes": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "InventoryItemUpdateRequest": {
+      "type": "object",
+      "properties": {
+        "inventoryItemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "vin": {
+          "type": "string",
+          "nullable": true
+        },
+        "serialNumber": {
+          "type": "string",
+          "nullable": true
+        },
+        "vehicleVersionId": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "vehicleColorId": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "location": {
+          "type": "string",
+          "nullable": true
+        },
+        "status": {
+          "$ref": "#/components/schemas/InventoryStatus"
+        },
+        "mileage": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "modelYear": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "entryDate": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "entryNotes": {
+          "type": "string",
+          "nullable": true
+        },
+        "purchasePrice": {
+          "type": "number",
+          "format": "double",
+          "nullable": true
+        },
+        "purchaseCurrency": {
+          "$ref": "#/components/schemas/Currency"
+        },
+        "supplierName": {
+          "type": "string",
+          "nullable": true
+        },
+        "exitDate": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "exitNotes": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "InventoryMovementRequest": {
+      "type": "object",
+      "properties": {
+        "inventoryItemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "movementType": {
+          "$ref": "#/components/schemas/MovementType"
+        },
+        "movementDate": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "fromLocation": {
+          "type": "string",
+          "nullable": true
+        },
+        "toLocation": {
+          "type": "string",
+          "nullable": true
+        },
+        "reason": {
+          "type": "string",
+          "nullable": true
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true
+        },
+        "documentReference": {
+          "type": "string",
+          "nullable": true
+        },
+        "performedBy": {
+          "type": "string",
+          "nullable": true
+        },
+        "previousMileage": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "newMileage": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "ChangeLocationRequest": {
+      "type": "object",
+      "properties": {
+        "inventoryItemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "newLocation": {
+          "type": "string",
+          "nullable": true
+        },
+        "reason": {
+          "type": "string",
+          "nullable": true
+        },
+        "performedBy": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "ChangeStatusRequest": {
+      "type": "object",
+      "properties": {
+        "inventoryItemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "newStatus": {
+          "type": "string",
+          "nullable": true
+        },
+        "reason": {
+          "type": "string",
+          "nullable": true
+        },
+        "performedBy": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "UpdateMileageRequest": {
+      "type": "object",
+      "properties": {
+        "inventoryItemId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "newMileage": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string",
+          "nullable": true
+        },
+        "performedBy": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "InventoryStatus": {
+      "enum": [
+        "Available",
+        "Reserved",
+        "InTransit",
+        "InMaintenance",
+        "Sold",
+        "Damaged",
+        "OnHold",
+        "Delivered"
+      ],
+      "type": "string"
+    },
+    "MovementType": {
+      "enum": [
+        "Entry",
+        "Exit",
+        "Transfer",
+        "StatusChange",
+        "MaintenanceIn",
+        "MaintenanceOut",
+        "Adjustment"
+      ],
+      "type": "string"
+    },
+    "Currency": {
+      "enum": [
+        "MXN",
+        "USD",
+        "CNY",
+        "JPY",
+        "EUR",
+        "CAD",
+        "RUB"
+      ],
+      "type": "string"
+    }
+  }
+}

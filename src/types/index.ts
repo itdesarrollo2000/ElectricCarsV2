@@ -6,6 +6,54 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+// Authentication Types
+export interface LoginRequest {
+  userName: string; // Can be email or username
+  password: string;
+}
+
+export interface LoginResponse {
+  token?: string;
+  tokenExpiration?: string;
+  refreshToken?: string;
+  data?: any;
+  meta?: any;
+  success: boolean;
+  messages?: string[];
+  errors?: string[] | { [key: string]: string }; // Can be array or object
+  errorCode: number;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface TokenRequest {
+  token: string;
+  refreshToken: string;
+}
+
+export interface PasswordResetRequest {
+  emailAddress: string;
+}
+
+export interface PasswordResetConfirmationRequest {
+  token: string;
+  email: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface PasswordChangeRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   pageNumber: number;
@@ -313,7 +361,12 @@ export interface VehicleColor {
   colorName: string;
   brandId: number;
   minYear?: number;
+  maxYear?: number;
   hexCode?: string;
+  manufacturer?: string;
+  mainColorGroup?: string;
+  mainColorGroupHexCode?: string;
+  colorType?: number | 'Metalico' | 'Solido' | 'Matte' | 'Pearlescente' | 'Especial';
 }
 
 export interface VehicleColorRequest {
@@ -321,7 +374,12 @@ export interface VehicleColorRequest {
   colorName: string;
   brandId: number;
   minYear?: number;
-  hexCode?: string;
+  maxYear?: number;
+  hexCode?: string | null;
+  manufacturer?: string | null;
+  mainColorGroup?: string | null;
+  mainColorGroupHexCode?: string | null;
+  colorType?: number | 'Metalico' | 'Solido' | 'Matte' | 'Pearlescente' | 'Especial' | null;
 }
 
 // Additional Equipment Types
@@ -375,4 +433,194 @@ export interface VehicleFilters {
 export interface BrandFilters {
   pageSize?: number;
   pageNumber?: number;
+}
+
+// ==================== INVENTORY TYPES ====================
+
+// Inventory Enums
+export enum InventoryStatus {
+  Available = 'Available',
+  Reserved = 'Reserved',
+  InTransit = 'InTransit',
+  InMaintenance = 'InMaintenance',
+  Sold = 'Sold',
+  Damaged = 'Damaged',
+  OnHold = 'OnHold',
+  Delivered = 'Delivered'
+}
+
+export enum MovementType {
+  Entry = 'Entry',
+  Exit = 'Exit',
+  Transfer = 'Transfer',
+  StatusChange = 'StatusChange',
+  MaintenanceIn = 'MaintenanceIn',
+  MaintenanceOut = 'MaintenanceOut',
+  Adjustment = 'Adjustment'
+}
+
+export enum Currency {
+  MXN = 'MXN',
+  USD = 'USD',
+  CNY = 'CNY',
+  JPY = 'JPY',
+  EUR = 'EUR',
+  CAD = 'CAD',
+  RUB = 'RUB'
+}
+
+// Inventory Item Types
+export interface InventoryItem {
+  inventoryItemId: number;
+  vin?: string | null;
+  serialNumber?: string | null;
+  vehicleVersionId: number;
+  vehicleColorId: number;
+  location?: string | null;
+  status: InventoryStatus;
+  mileage?: number | null;
+  modelYear: number;
+  entryDate?: string | null;
+  entryNotes?: string | null;
+  purchasePrice?: number | null;
+  purchaseCurrency?: Currency | null;
+  supplierName?: string | null;
+  exitDate?: string | null;
+  exitNotes?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  // Relations
+  vehicleVersion?: VehicleVersion;
+  vehicleColor?: VehicleColor;
+  images?: InventoryItemImage[];
+  movements?: InventoryMovement[];
+}
+
+export interface InventoryItemRequest {
+  vin?: string | null;
+  serialNumber?: string | null;
+  vehicleVersionId: number;
+  vehicleColorId: number;
+  location?: string | null;
+  status: InventoryStatus;
+  mileage?: number | null;
+  modelYear: number;
+  entryDate?: string | null;
+  entryNotes?: string | null;
+  purchasePrice?: number | null;
+  purchaseCurrency?: Currency | null;
+  supplierName?: string | null;
+  exitDate?: string | null;
+  exitNotes?: string | null;
+}
+
+export interface InventoryItemUpdateRequest {
+  inventoryItemId: number;
+  vin?: string | null;
+  serialNumber?: string | null;
+  vehicleVersionId?: number | null;
+  vehicleColorId?: number | null;
+  location?: string | null;
+  status?: InventoryStatus | null;
+  mileage?: number | null;
+  modelYear?: number | null;
+  entryDate?: string | null;
+  entryNotes?: string | null;
+  purchasePrice?: number | null;
+  purchaseCurrency?: Currency | null;
+  supplierName?: string | null;
+  exitDate?: string | null;
+  exitNotes?: string | null;
+}
+
+// Inventory Movement Types
+export interface InventoryMovement {
+  movementId: number;
+  inventoryItemId: number;
+  movementType: MovementType;
+  movementDate: string;
+  fromLocation?: string | null;
+  toLocation?: string | null;
+  reason?: string | null;
+  notes?: string | null;
+  documentReference?: string | null;
+  performedBy?: string | null;
+  previousMileage?: number | null;
+  newMileage?: number | null;
+  createdAt?: string | null;
+}
+
+export interface InventoryMovementRequest {
+  inventoryItemId: number;
+  movementType: MovementType;
+  movementDate?: string | null;
+  fromLocation?: string | null;
+  toLocation?: string | null;
+  reason?: string | null;
+  notes?: string | null;
+  documentReference?: string | null;
+  performedBy?: string | null;
+  previousMileage?: number | null;
+  newMileage?: number | null;
+}
+
+export interface ChangeLocationRequest {
+  inventoryItemId: number;
+  newLocation?: string | null;
+  reason?: string | null;
+  performedBy?: string | null;
+}
+
+export interface ChangeStatusRequest {
+  inventoryItemId: number;
+  newStatus?: InventoryStatus | null;
+  reason?: string | null;
+  performedBy?: string | null;
+}
+
+export interface UpdateMileageRequest {
+  inventoryItemId: number;
+  newMileage: number;
+  notes?: string | null;
+  performedBy?: string | null;
+}
+
+// Inventory Image Types
+export interface InventoryItemImage {
+  imageId: number;
+  inventoryItemId: number;
+  imageUrl: string;
+  imageType?: string | null;
+  uploadedAt?: string | null;
+  uploadedBy?: string | null;
+}
+
+// Inventory Filter Types
+export interface InventoryFilters {
+  VIN?: string;
+  SerialNumber?: string;
+  VehicleVersionId?: number;
+  VehicleColorId?: number;
+  Location?: string;
+  Status?: InventoryStatus;
+  MinMileage?: number;
+  MaxMileage?: number;
+  ModelYear?: number;
+  EntryDateFrom?: string;
+  EntryDateTo?: string;
+  SupplierName?: string;
+  HasExited?: boolean;
+  PageSize?: number;
+  PageNumber?: number;
+}
+
+export interface MovementFilters {
+  InventoryItemId?: number;
+  MovementType?: MovementType;
+  MovementDateFrom?: string;
+  MovementDateTo?: string;
+  Location?: string;
+  PerformedBy?: string;
+  PageSize?: number;
+  PageNumber?: number;
 }
