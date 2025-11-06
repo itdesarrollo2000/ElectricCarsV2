@@ -340,12 +340,104 @@ const VehicleDetailPage = () => {
 
   const downloadExcelTemplate = () => {
     const template = [
+      // ===== DATOS PRINCIPALES =====
+      {
+        Campo: 'versionName',
+        Descripción: 'Nombre de la Versión',
+        Valor: '',
+        Tipo: 'Texto (REQUERIDO)',
+      },
+      {
+        Campo: 'originPrice',
+        Descripción: 'Precio Original',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'originCurrency',
+        Descripción: 'Moneda',
+        Valor: '',
+        Tipo: 'Enum: MXN, USD, CNY, JPY, EUR, CAD, RUB',
+      },
       {
         Campo: 'discountPrice',
         Descripción: 'Precio con Descuento',
         Valor: '',
         Tipo: 'Número',
       },
+      {
+        Campo: 'maxDrivingRangeKm',
+        Descripción: 'Autonomía Máxima (km)',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'motorPowerkw',
+        Descripción: 'Potencia del Motor (kW)',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'batteryCapacityKwh',
+        Descripción: 'Capacidad de Batería (kWh)',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'maximumSpeedKmH',
+        Descripción: 'Velocidad Máxima (km/h)',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'motorTorqueNm',
+        Descripción: 'Torque del Motor (Nm)',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'chargeTimeHrs',
+        Descripción: 'Tiempo de Carga (horas)',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'seatsNumber',
+        Descripción: 'Número de Asientos',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'doorsNumber',
+        Descripción: 'Número de Puertas',
+        Valor: '',
+        Tipo: 'Número',
+      },
+      {
+        Campo: 'wheelSize',
+        Descripción: 'Tamaño de Llanta',
+        Valor: '',
+        Tipo: 'Texto (Ej: 18 pulgadas)',
+      },
+      {
+        Campo: 'airbag',
+        Descripción: 'Airbag',
+        Valor: '',
+        Tipo: 'Boolean: true/false',
+      },
+      {
+        Campo: 'rearViewCamera',
+        Descripción: 'Cámara Trasera',
+        Valor: '',
+        Tipo: 'Boolean: true/false',
+      },
+      {
+        Campo: 'parkingRadar',
+        Descripción: 'Sensor de Estacionamiento',
+        Valor: '',
+        Tipo: 'Boolean: true/false',
+      },
+      // ===== DATOS ADICIONALES =====
       {
         Campo: 'lenghtmm',
         Descripción: 'Longitud (mm)',
@@ -1015,7 +1107,8 @@ const VehicleDetailPage = () => {
     doc.setFontSize(10);
     doc.text('AUTONOMÍA', 167.5, yPosition + 7, { align: 'center' });
     doc.setFontSize(14);
-    doc.text(`${version.maxDrivingRangeKm || version.range || 'N/A'} km`, 167.5, yPosition + 14, { align: 'center' });
+    const rangeValue = (version as any).maxDrivingRangeKm != null ? (version as any).maxDrivingRangeKm : 'N/A';
+    doc.text(`${rangeValue}${rangeValue !== 'N/A' ? ' km' : ''}`, 167.5, yPosition + 14, { align: 'center' });
 
     yPosition += 25;
 
@@ -1048,24 +1141,24 @@ const VehicleDetailPage = () => {
 
     const specs = [
       ['RENDIMIENTO', '', '', ''],
-      ['Autonomía máxima', version.range ? `${version.range} km` : 'N/A', 'Potencia del motor', version.motorPower ? `${version.motorPower} kW` : 'N/A'],
-      ['Velocidad máxima', (version as any).maximumSpeedKmH ? `${(version as any).maximumSpeedKmH} km/h` : 'N/A', 'Torque del motor', version.torque ? `${version.torque} Nm` : 'N/A'],
+      ['Autonomía máxima', (version as any).maxDrivingRangeKm != null ? `${(version as any).maxDrivingRangeKm} km` : 'N/A', 'Potencia del motor', (version as any).motorPowerkw != null ? `${(version as any).motorPowerkw} kW` : 'N/A'],
+      ['Velocidad máxima', (version as any).maximumSpeedKmH != null ? `${(version as any).maximumSpeedKmH} km/h` : 'N/A', 'Torque del motor', (version as any).motorTorqueNm != null ? `${(version as any).motorTorqueNm} Nm` : 'N/A'],
       ['', '', '', ''],
       ['BATERÍA Y CARGA', '', '', ''],
-      ['Capacidad batería', version.batteryCapacity ? `${version.batteryCapacity} kWh` : 'N/A', 'Tiempo de carga', version.chargingTime ? `${version.chargingTime} hrs` : 'N/A'],
-      ['Voltaje de carga', (version as any).chargeVoltage === 1 ? '110V' : (version as any).chargeVoltage === 2 ? '220V' : 'N/A', 'Carga rápida', version.fastChargingTime ? `${version.fastChargingTime} hrs` : (version as any).hasFastCharge ? 'Sí' : 'N/A'],
+      ['Capacidad batería', (version as any).batteryCapacityKwh != null ? `${(version as any).batteryCapacityKwh} kWh` : 'N/A', 'Tiempo de carga', (version as any).chargeTimeHrs != null ? `${(version as any).chargeTimeHrs} hrs` : 'N/A'],
+      ['Voltaje de carga', (version as any).chargeVoltage === 1 ? '110V' : (version as any).chargeVoltage === 2 ? '220V' : 'N/A', 'Carga rápida', (version as any).fastChargeTimeHrs != null ? `${(version as any).fastChargeTimeHrs} hrs` : 'N/A'],
       ['', '', '', ''],
       ['DIMENSIONES Y CAPACIDAD', '', '', ''],
-      ['Número de asientos', version.seatingCapacity ? `${version.seatingCapacity}` : 'N/A', 'Número de puertas', (version as any).doorsNumber ? `${(version as any).doorsNumber}` : 'N/A'],
-      ['Longitud', version.length ? `${version.length} mm` : 'N/A', 'Ancho', version.width ? `${version.width} mm` : 'N/A'],
-      ['Altura', version.height ? `${version.height} mm` : 'N/A', 'Distancia entre ejes', version.wheelbase ? `${version.wheelbase} mm` : 'N/A'],
-      ['Peso en vacío', version.weight ? `${version.weight} kg` : 'N/A', 'Altura al suelo', version.groundClearance ? `${version.groundClearance} mm` : 'N/A'],
+      ['Número de asientos', (version as any).seatsNumber != null ? `${(version as any).seatsNumber}` : 'N/A', 'Número de puertas', (version as any).doorsNumber != null ? `${(version as any).doorsNumber}` : 'N/A'],
+      ['Longitud', (version as any).lenghtmm != null ? `${(version as any).lenghtmm} mm` : 'N/A', 'Ancho', (version as any).widthmm != null ? `${(version as any).widthmm} mm` : 'N/A'],
+      ['Altura', (version as any).heightmm != null ? `${(version as any).heightmm} mm` : 'N/A', 'Distancia entre ejes', (version as any).wheelBasemm != null ? `${(version as any).wheelBasemm} mm` : 'N/A'],
+      ['Peso en vacío', (version as any).curbWeightKg != null ? `${(version as any).curbWeightKg} kg` : 'N/A', 'Altura al suelo', (version as any).groundClearance != null ? `${(version as any).groundClearance} mm` : 'N/A'],
       ['', '', '', ''],
       ['EQUIPAMIENTO', '', '', ''],
-      ['Airbag', (version as any).airbag ? 'Sí' : 'No', 'Aire acondicionado', (version as any).fullAutomaticAC ? 'Automático' : 'N/A'],
-      ['Cámara trasera', (version as any).rearViewCamera ? 'Sí' : 'N/A', 'Sensor de estacionamiento', (version as any).parkingRadar ? 'Sí' : 'N/A'],
-      ['Techo panorámico', (version as any).skyRoof ? 'Sí' : 'N/A', 'Sistema de navegación', (version as any).navigationSystem ? 'Sí' : 'N/A'],
-      ['Llanta de repuesto', (version as any).spareTire ? 'Sí' : 'N/A', 'Tamaño de llantas', (version as any).wheelSize || 'N/A'],
+      ['Airbag', (version as any).airbag === true ? 'Sí' : (version as any).airbag === false ? 'No' : 'N/A', 'Aire acondicionado', (version as any).fullAutomaticAC === true ? 'Automático' : 'N/A'],
+      ['Cámara trasera', (version as any).rearViewCamera === true ? 'Sí' : (version as any).rearViewCamera === false ? 'No' : 'N/A', 'Sensor de estacionamiento', (version as any).parkingRadar === true ? 'Sí' : (version as any).parkingRadar === false ? 'No' : 'N/A'],
+      ['Techo panorámico', (version as any).skyRoof === true ? 'Sí' : (version as any).skyRoof === false ? 'No' : 'N/A', 'Sistema de navegación', (version as any).navigationSystem === true ? 'Sí' : (version as any).navigationSystem === false ? 'No' : 'N/A'],
+      ['Llanta de repuesto', (version as any).spareTire === true ? 'Sí' : (version as any).spareTire === false ? 'No' : 'N/A', 'Tamaño de llantas', (version as any).wheelSize || 'N/A'],
     ];
 
     autoTable(doc, {
